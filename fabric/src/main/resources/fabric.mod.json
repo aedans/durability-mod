@@ -23,7 +23,8 @@
     ]
   },
   "mixins": [
-    "durability.mixins.json"
+    "durability.mixins.json",
+    "durability-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.18.1",

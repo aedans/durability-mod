@@ -1,6 +1,7 @@
 package io.github.aedans;
 
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 
 import java.io.File;
@@ -14,38 +15,32 @@ import java.util.logging.Logger;
 public final class DurabilityMod {
   public static final String MOD_ID = "durability";
   public static final Logger LOGGER = Logger.getLogger(MOD_ID);
-  public static int multiply = 1;
-  public static int divide = 1;
-  public static boolean loaded = false;
+  public static DurabilityConfig config;
 
-  public static void loadConfig() {
-    if (loaded) {
-      return;
+  public static DurabilityConfig getConfig() {
+    if (config != null) {
+      return config;
+    } else {
+      config = new DurabilityConfig(new DurabilityConfig.Modifier(1, 1), new DurabilityConfig.Modifier(1, 1));
     }
-
 
     Path path = Platform.getConfigFolder().resolve("durability.json");
     File file = path.toFile();
     if (!file.exists()) {
       try {
-        Files.writeString(path, """
-            {
-              "multiply": 1,
-              "divide": 1
-            }
-            """);
+        var string = new GsonBuilder().setPrettyPrinting().create().toJson(config);
+        Files.writeString(path, string);
       } catch (IOException e) {
         LOGGER.severe("Error reading durability mod configuration: " + e.getMessage());
       }
     }
 
     try {
-      var config = JsonParser.parseReader(new FileReader(file));
-      multiply = config.getAsJsonObject().get("multiply").getAsInt();
-      divide = config.getAsJsonObject().get("divide").getAsInt();
-      loaded = true;
+      config = new Gson().fromJson(new FileReader(file), DurabilityConfig.class);
     } catch (FileNotFoundException e) {
       LOGGER.severe("Error reading durability mod configuration: " + e.getMessage());
     }
+
+    return config;
   }
 }

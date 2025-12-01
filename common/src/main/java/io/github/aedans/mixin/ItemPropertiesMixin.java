@@ -19,8 +19,8 @@ public abstract class ItemPropertiesMixin {
   @Inject(at = @At("TAIL"), method = "component")
   public <T> void component(DataComponentType<T> dataComponentType, T object, CallbackInfoReturnable<Item.Properties> cir) {
     if (dataComponentType.equals(DataComponents.MAX_DAMAGE)) {
-      DurabilityMod.loadConfig();
-      this.components.set(DataComponents.MAX_DAMAGE, ((int) object * DurabilityMod.multiply) / DurabilityMod.divide);
+      var config = DurabilityMod.getConfig();
+      this.components.set(DataComponents.MAX_DAMAGE, ((int) object * config.durability().multiply()) / config.durability().divide());
     }
   }
 }
